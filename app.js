@@ -1,16 +1,25 @@
-// Conecta no HiveMQ
+// =========================
+// CONEXÃO MQTT
+// =========================
+
 const client = mqtt.connect(
 'wss://broker.hivemq.com:8884/mqtt'
 );
 
-// Tópicos MQTT
+// =========================
+// TÓPICOS MQTT
+// =========================
+
 const topicoEnviar =
 'casa/ledSalvar';
 
 const topicoReceber =
 'casa/ledSalvo';
 
-// Elementos HTML
+// =========================
+// ELEMENTOS HTML
+// =========================
+
 const led =
 document.getElementById('led');
 
@@ -23,20 +32,34 @@ document.getElementById('alarme');
 const botoes =
 document.querySelectorAll('button');
 
-// Validação de elementos
-if (!led || !statusText || !alarme || botoes.length === 0) {
+// =========================
+// VERIFICAÇÃO
+// =========================
+
+if (
+!led ||
+!statusText ||
+!alarme ||
+botoes.length === 0
+) {
 
   console.error(
-  'Erro: Elementos HTML não encontrados'
+  'Elementos HTML não encontrados'
   );
+
 }
 
-// Libera áudio no celular/navegador
+// =========================
+// LIBERA ÁUDIO NO CELULAR
+// =========================
+
 document.body.addEventListener(
 'click',
+
 () => {
 
   alarme.play()
+
   .then(() => {
 
     alarme.pause();
@@ -48,69 +71,95 @@ document.body.addEventListener(
     );
 
   })
-  .catch(err => {
+
+  .catch((erro) => {
 
     console.log(
     'Erro ao liberar áudio:',
-    err
+    erro
     );
 
   });
 
 },
+
 { once: true }
+
 );
 
-// Conectou no MQTT
-client.on('connect', () => {
+// =========================
+// CONECTOU MQTT
+// =========================
 
-  console.log('MQTT conectado');
+client.on(
+'connect',
 
-  if (statusText) {
+() => {
 
-    statusText.innerHTML =
-    'Conectado ✔';
-  }
+  console.log(
+  'MQTT conectado'
+  );
+
+  // Status
+  statusText.innerHTML =
+  'Conectado ✔';
 
   // Habilita botões
-  botoes.forEach(btn => {
+  botoes.forEach((btn) => {
 
     btn.disabled = false;
 
   });
 
-  // Escuta mensagens
-  client.subscribe(topicoReceber);
+  // Escuta tópico
+  client.subscribe(
+  topicoReceber
+  );
 
-});
+}
 
-// Recebe mensagens
+);
+
+// =========================
+// RECEBE MENSAGENS MQTT
+// =========================
+
 client.on(
 'message',
+
 (topic, message) => {
 
   const msg =
   message.toString();
 
   console.log(
-  'Recebido:',
+  'Mensagem recebida:',
   msg
   );
 
-  if (!led || !alarme) return;
+  // =====================
+  // LED LIGADO
+  // =====================
 
-  // LED ON
   if(msg === '1') {
 
+    console.log(
+    'LED LIGADO'
+    );
+
+    // LED verde
     led.classList.remove('off');
 
     led.classList.add('on');
 
     // Reinicia áudio
+    alarme.pause();
+
     alarme.currentTime = 0;
 
     // Toca alarme
     alarme.play()
+
     .then(() => {
 
       console.log(
@@ -118,20 +167,45 @@ client.on(
       );
 
     })
-    .catch(err => {
+
+    .catch((erro) => {
 
       console.log(
-      'Erro ao tocar áudio:',
-      err
+      'Erro ao tocar alarme:',
+      erro
       );
 
     });
 
+    // =====================
+    // ENVIA PARA KODULAR
+    // =====================
+
+    if(window.AppInventor) {
+
+      window.AppInventor.setWebViewString(
+      'ALARME_ON'
+      );
+
+      console.log(
+      'Enviado para Kodular: ALARME_ON'
+      );
+
+    }
+
   }
 
-  // LED OFF
+  // =====================
+  // LED DESLIGADO
+  // =====================
+
   if(msg === '0') {
 
+    console.log(
+    'LED DESLIGADO'
+    );
+
+    // LED apagado
     led.classList.remove('on');
 
     led.classList.add('off');
@@ -141,63 +215,91 @@ client.on(
 
     alarme.currentTime = 0;
 
-    console.log(
-    'Alarme parado'
-    );
+    // =====================
+    // ENVIA PARA KODULAR
+    // =====================
+
+    if(window.AppInventor) {
+
+      window.AppInventor.setWebViewString(
+      'ALARME_OFF'
+      );
+
+      console.log(
+      'Enviado para Kodular: ALARME_OFF'
+      );
+
+    }
 
   }
 
-});
+}
 
-// Erro MQTT
-client.on('error', (err) => {
+);
+
+// =========================
+// ERRO MQTT
+// =========================
+
+client.on(
+'error',
+
+(err) => {
 
   console.error(
   'Erro MQTT:',
   err
   );
 
-  if (statusText) {
-
-    statusText.innerHTML =
-    'Erro na conexão ❌';
-  }
+  statusText.innerHTML =
+  'Erro MQTT ❌';
 
   // Desabilita botões
-  botoes.forEach(btn => {
+  botoes.forEach((btn) => {
 
     btn.disabled = true;
 
   });
 
-});
+}
 
-// Desconectado
-client.on('disconnect', () => {
+);
+
+// =========================
+// DESCONECTOU
+// =========================
+
+client.on(
+'close',
+
+() => {
 
   console.log(
   'MQTT desconectado'
   );
 
-  if (statusText) {
-
-    statusText.innerHTML =
-    'Desconectado ⚠️';
-  }
+  statusText.innerHTML =
+  'Desconectado ⚠️';
 
   // Desabilita botões
-  botoes.forEach(btn => {
+  botoes.forEach((btn) => {
 
     btn.disabled = true;
 
   });
 
-});
+}
 
-// Envia comando MQTT
+);
+
+// =========================
+// ENVIAR MQTT
+// =========================
+
 function sendMessage(valor) {
 
-  if (!client.connected) {
+  // Verifica conexão
+  if(!client.connected) {
 
     console.warn(
     'MQTT não conectado'
@@ -206,29 +308,30 @@ function sendMessage(valor) {
     return;
   }
 
+  console.log(
+  'Enviando:',
+  valor
+  );
+
   // Desabilita botões
-  botoes.forEach(btn => {
+  botoes.forEach((btn) => {
 
     btn.disabled = true;
 
   });
 
-  console.log(
-  'Enviado:',
-  valor
-  );
-
+  // Publica MQTT
   client.publish(
   topicoEnviar,
   valor
   );
 
-  // Reabilita botões
+  // Reabilita após 300ms
   setTimeout(() => {
 
-    if (client.connected) {
+    if(client.connected) {
 
-      botoes.forEach(btn => {
+      botoes.forEach((btn) => {
 
         btn.disabled = false;
 
@@ -237,4 +340,5 @@ function sendMessage(valor) {
     }
 
   }, 300);
+
 }
