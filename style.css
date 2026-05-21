@@ -1,0 +1,96 @@
+body {
+
+  margin: 0;
+  padding: 0;
+
+  background: #111;
+
+  font-family: Arial;
+
+  color: white;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  height: 100vh;
+}
+
+.container {
+
+  text-align: center;
+}
+
+h1 {
+
+  margin-bottom: 30px;
+}
+
+.led {
+
+  width: 120px;
+  height: 120px;
+
+  border-radius: 50%;
+
+  margin: auto;
+
+  transition: 0.3s;
+}
+
+.on {
+
+  background: lime;
+
+  box-shadow:
+  0 0 20px lime,
+  0 0 40px lime,
+  0 0 60px lime;
+}
+
+.off {
+
+  background: #444;
+}
+
+.buttons {
+
+  margin-top: 30px;
+}
+
+button {
+
+  width: 140px;
+
+  padding: 15px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  margin: 10px;
+}
+
+.onBtn {
+
+  background: green;
+  color: white;
+}
+
+.offBtn {
+
+  background: red;
+  color: white;
+}
+
+#status {
+
+  margin-top: 20px;
+
+  color: #aaa;
+}

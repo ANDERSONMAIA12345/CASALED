@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Controle MQTT Arduino</title>
+
+  <link rel="stylesheet"
+        href="style.css">
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>Controle MQTT</h1>
+
+    <!-- LED virtual -->
+    <div id="led"
+         class="led off">
+    </div>
+
+    <!-- Status -->
+    <p id="status">
+      Conectando...
+    </p>
+
+    <!-- Botões -->
+    <div class="buttons">
+
+      <button class="onBtn"
+              onclick="sendMessage('1')">
+
+        LIGAR
+      </button>
+
+      <button class="offBtn"
+              onclick="sendMessage('0')">
+
+        DESLIGAR
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Biblioteca MQTT -->
+  <script src=
+  "https://unpkg.com/mqtt/dist/mqtt.min.js">
+  </script>
+
+  <!-- Alarme -->
+  <audio id="alarme" loop>
+
+    <source
+    src=
+    "https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"
+    type="audio/ogg">
+
+  </audio>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+
+</body>
+</html>
