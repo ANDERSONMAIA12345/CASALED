@@ -74,6 +74,22 @@ button {
   cursor: pointer;
 
   margin: 10px;
+
+  transition: 0.2s;
+}
+
+button:hover:not(:disabled) {
+
+  transform: scale(1.08);
+
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+button:disabled {
+
+  opacity: 0.5;
+
+  cursor: not-allowed;
 }
 
 .onBtn {
